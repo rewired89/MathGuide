@@ -2092,6 +2092,222 @@ Example: prove lim[x→2] 3x = 6.
     ]
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    id: "applied-math",
+    icon: "⚙️",
+    title: "Applied Mathematics",
+    subtitle: "Math built to solve real problems — modeling, computation, and the tools science runs on",
+    concepts: [
+
+      {
+        id: "linear-algebra",
+        title: "Linear Algebra — Vectors, Matrices & Transformations",
+        tags: ["applied"],
+        chain: ["A vector is a direction + magnitude", "A matrix is a transformation", "Multiply matrix × vector → transformed vector", "Eigenvalues capture scaling directions", "Everything in data science runs on this"],
+        blurb: "Linear algebra is the language of data. Every machine learning model, genome comparison, and image is ultimately a matrix operation.",
+        detail: `<strong>Vectors:</strong>
+A vector is an ordered list of numbers: v = [3, −1, 2]. It represents a point or direction in space.
+Addition: add component by component. Scalar multiplication: multiply every component.
+Dot product: v · w = Σ vᵢwᵢ. Geometric meaning: v · w = |v||w|cos(θ). Zero dot product → perpendicular (orthogonal).
+
+<strong>Matrices:</strong>
+A matrix is a rectangular array of numbers. An m×n matrix has m rows and n columns.
+Matrix–vector multiplication Ax maps vector x to a new vector — a linear transformation of space.
+Matrix–matrix multiplication AB applies transformation B then A. Note: AB ≠ BA in general.
+
+<strong>Key operations:</strong>
+Transpose (Aᵀ): flip rows and columns. (AB)ᵀ = BᵀAᵀ.
+Inverse (A⁻¹): only square matrices, only when det(A) ≠ 0. A⁻¹A = I.
+Determinant: scalar summarizing the matrix. det(A) = 0 → matrix is singular (no inverse). |det(A)| = volume scaling factor of the transformation.
+
+<strong>Eigenvalues and eigenvectors:</strong>
+Av = λv: vector v is an eigenvector if the matrix only scales it (by λ) without rotating it.
+To find: solve det(A − λI) = 0 (characteristic equation) for λ, then find v for each λ.
+PCA (Principal Component Analysis) is entirely eigenvectors of the covariance matrix.
+
+<strong>Systems of equations:</strong>
+Ax = b. If A is invertible: x = A⁻¹b. In practice, use Gaussian elimination (row reduction) — faster than computing inverses.
+
+<strong>In Bioinformatics:</strong>
+Sequence alignment scoring matrices (BLOSUM, PAM) are matrices. Gene expression data = matrix of samples × genes. SVD (Singular Value Decomposition) decomposes expression matrices to find patterns. PCA reduces high-dimensional genomic data to principal axes.`,
+        shortcut: `Matrix multiplication dimension check: (m×n)(n×p) = (m×p). Inner dimensions must match; outer dimensions give the result shape.
+Eigenvalue shortcut for 2×2: λ² − tr(A)λ + det(A) = 0, where tr(A) = sum of diagonal entries.
+Invertible ↔ det ≠ 0 ↔ full rank ↔ Ax=0 has only the trivial solution.`,
+        memory: `A matrix is a machine. You feed it a vector, it spits out a transformed vector. Eigenvectors are the directions that go INTO the machine and come out pointing the same way — just stretched or shrunk by the eigenvalue.`,
+        examTip: `Row operations don't change the solution set of Ax=b but DO change the determinant (row swap → sign flip; row scaling → scales det). Reduced Row Echelon Form (RREF) is the systematic end goal of elimination. Rank = number of pivot columns = dimension of the column space.`,
+        facts: ["Dot product = |v||w|cosθ", "det=0 → no inverse", "Av=λv → eigen", "PCA = eigenvectors", "AB ≠ BA", "Rank = pivot columns"]
+      },
+
+      {
+        id: "differential-equations",
+        title: "Differential Equations",
+        tags: ["applied"],
+        chain: ["A relationship between a function and its derivatives", "ODE = one variable, PDE = multiple", "First-order: dy/dx = f(x,y)", "Solve = find the function", "Models anything that changes"],
+        blurb: "A differential equation describes how something changes. Population growth, drug concentration, electrical signals, epidemic spread — all are differential equations in disguise.",
+        detail: `<strong>What is a differential equation?</strong>
+An equation involving a function and its derivatives. Instead of solving for a number, you solve for a function.
+dy/dt = ky says "the rate of change of y is proportional to y itself." Solution: y(t) = y₀eᵏᵗ.
+
+<strong>First-order ODEs:</strong>
+dy/dx = f(x,y). Order = highest derivative present.
+Separable: if f(x,y) = g(x)h(y), separate variables and integrate both sides.
+dy/dx = xy → dy/y = x dx → ln|y| = x²/2 + C → y = Ae^(x²/2)
+
+Linear first-order: dy/dx + P(x)y = Q(x). Solved with integrating factor μ = e^(∫P dx).
+
+<strong>Second-order linear ODEs:</strong>
+ay'' + by' + cy = 0. Characteristic equation: ar² + br + c = 0.
+• Two real roots r₁, r₂: y = C₁eʳ¹ˣ + C₂eʳ²ˣ
+• Repeated root r: y = (C₁ + C₂x)eʳˣ
+• Complex roots α±βi: y = eᵅˣ(C₁cos(βx) + C₂sin(βx))
+
+<strong>Exponential models (most important for biology):</strong>
+Growth: dN/dt = rN → N(t) = N₀eʳᵗ
+Decay: dN/dt = −λN → N(t) = N₀e^(−λt) (radioactive decay, drug clearance)
+Logistic: dN/dt = rN(1 − N/K) → S-shaped growth curve with carrying capacity K
+
+<strong>Systems of ODEs:</strong>
+Two coupled equations. Lotka-Volterra (predator-prey): dx/dt = αx−βxy, dy/dt = δxy−γy. Solved with eigenvalues of the coefficient matrix.
+
+<strong>In Bioinformatics:</strong>
+Pharmacokinetic models (drug concentration over time) are ODEs. Epidemic models (SIR: Susceptible-Infected-Recovered) are systems of ODEs. Protein folding dynamics and gene regulatory network modeling use ODE systems.`,
+        shortcut: `Separable ODE checklist:
+1. Write as dy/dx = g(x)/h(y)
+2. Rearrange: h(y) dy = g(x) dx
+3. Integrate both sides
+4. Solve for y, apply initial condition to find C.
+
+Exponential model: if the rate is proportional to the amount, the answer is always an exponential.`,
+        memory: `The solution to dy/dt = ky is always y = Ce^(kt). Memorize this the way you memorize your own phone number. k > 0 = growth. k < 0 = decay. Initial condition y(0) = y₀ gives C = y₀.`,
+        examTip: `Always apply initial conditions AFTER finding the general solution (which has arbitrary constant C), not before. General solution + initial condition = particular solution. Missing this step is the most common ODE error.`,
+        facts: ["dy/dt=ky → y=Ce^kt", "Separable: split variables", "Char. eqn for 2nd order", "Logistic: S-curve", "k>0 growth, k<0 decay", "SIR = ODE system"]
+      },
+
+      {
+        id: "numerical-methods",
+        title: "Numerical Methods",
+        tags: ["applied"],
+        chain: ["Most real equations have no closed-form solution", "Approximate the answer numerically", "Newton's method for roots", "Euler's method for ODEs", "Error analysis tells you how close you are"],
+        blurb: "Most equations that matter can't be solved exactly. Numerical methods find answers that are close enough — and tell you how close. This is how computers solve math.",
+        detail: `<strong>Why numerical methods?</strong>
+Closed-form solutions (exact formulas) exist for simple cases. Real-world problems — nonlinear ODEs, transcendental equations, high-dimensional integrals — have no exact formula. Numerical methods give controlled approximations.
+
+<strong>Root finding — Newton's Method:</strong>
+Find x where f(x) = 0. Start with a guess x₀, then iterate:
+xₙ₊₁ = xₙ − f(xₙ)/f'(xₙ)
+Geometrically: draw the tangent line at xₙ, find where it crosses zero.
+Converges quadratically (doubles correct digits each step) near a root. Fails if f'(xₙ) = 0 or starting guess is too far.
+
+<strong>Numerical integration:</strong>
+Trapezoidal rule: ∫f dx ≈ h/2 × [f(x₀) + 2f(x₁) + … + 2f(xₙ₋₁) + f(xₙ)]
+Simpson's rule: uses parabolas instead of trapezoids — more accurate for same step size h.
+Error decreases as h shrinks: trapezoidal O(h²), Simpson's O(h⁴).
+
+<strong>Numerical ODEs — Euler's Method:</strong>
+Given dy/dt = f(t,y), y(t₀) = y₀. Step forward by h:
+yₙ₊₁ = yₙ + h·f(tₙ, yₙ)
+Simple but accumulates error. Runge-Kutta 4 (RK4) is the standard: uses four slope estimates per step, error O(h⁴).
+
+<strong>Floating point and error:</strong>
+Computers store numbers with finite precision (64-bit IEEE 754 ≈ 15–16 decimal digits). Round-off error is unavoidable. Catastrophic cancellation: subtracting two nearly equal numbers destroys significant digits.
+Absolute error: |x_approx − x_true|. Relative error: |x_approx − x_true| / |x_true|.
+
+<strong>In Bioinformatics:</strong>
+Sequence alignment algorithms (Smith-Waterman, Needleman-Wunsch) are dynamic programming — structured numerical recursion. Maximum likelihood estimation for phylogenetic trees uses numerical optimization (gradient descent, Newton's method). MCMC (Markov Chain Monte Carlo) for Bayesian inference is a numerical sampling method.`,
+        shortcut: `Newton's method converges fast but needs a good start. Bisection method is slower (O(log n)) but guaranteed to converge if you bracket the root: find a and b where f(a) and f(b) have opposite signs, then repeatedly halve the interval.`,
+        memory: `Euler's method = "follow the current slope for a tiny step, then recalculate." You're always a little wrong because the slope changes, but tiny steps mean tiny errors. RK4 is like taking four slope samples per step and averaging them — much more accurate.`,
+        examTip: `Step size h is a trade-off: smaller h = less truncation error but more steps and more round-off accumulation. There's an optimal h where total error is minimized. This is why numerical methods need careful tuning, not just "make h smaller."`,
+        facts: ["Newton: xₙ₊₁=xₙ−f/f'", "Euler: yₙ₊₁=yₙ+hf", "RK4 = standard ODE solver", "Trap rule: O(h²)", "Simpson's: O(h⁴)", "Float = ~15 digits"]
+      },
+
+      {
+        id: "optimization",
+        title: "Optimization",
+        tags: ["applied"],
+        chain: ["Objective function to minimize or maximize", "Unconstrained: set gradient = 0", "Constrained: Lagrange multipliers", "Convex problems have one global minimum", "Gradient descent for high dimensions"],
+        blurb: "Optimization is the math of making things as good as possible. Every trained model, fitted curve, and designed experiment is the solution to an optimization problem.",
+        detail: `<strong>The basic setup:</strong>
+Find x* that minimizes (or maximizes) f(x). f is the objective function; x may be a scalar, vector, or matrix.
+
+<strong>Unconstrained optimization:</strong>
+Necessary condition: ∇f(x*) = 0 (gradient is zero — flat point).
+Sufficient condition: the Hessian H (matrix of second derivatives) is positive definite at x* → local minimum.
+1D: f'(x*) = 0 and f''(x*) > 0 → local min. f''(x*) < 0 → local max. f''(x*) = 0 → inconclusive.
+
+<strong>Constrained optimization — Lagrange multipliers:</strong>
+Minimize f(x,y) subject to g(x,y) = 0.
+At the optimum: ∇f = λ∇g (gradients are parallel).
+Set up system: ∂f/∂x = λ∂g/∂x, ∂f/∂y = λ∂g/∂y, g(x,y) = 0. Solve for x, y, λ.
+
+<strong>Convexity:</strong>
+f is convex if f(λx + (1−λ)y) ≤ λf(x) + (1−λ)f(y) for all λ ∈ [0,1]. (Bowl-shaped.)
+Convex function + unconstrained → any local minimum is THE global minimum.
+Linear programming (LP) optimizes a linear function over a convex polytope — solution always at a vertex.
+
+<strong>Gradient descent:</strong>
+Update rule: xₙ₊₁ = xₙ − α∇f(xₙ) where α = learning rate.
+Intuition: always step downhill. Converges to a local minimum.
+Stochastic Gradient Descent (SGD): use a random subset (minibatch) of data per step. Noisier but much faster for large datasets — standard in deep learning.
+
+<strong>In Bioinformatics:</strong>
+Maximum likelihood estimation (MLE) fits a model by maximizing the likelihood function — an optimization problem. Hidden Markov Model parameter training (Baum-Welch) is expectation-maximization, which is iterative optimization. Protein structure prediction minimizes an energy function.`,
+        shortcut: `Lagrange multiplier steps:
+1. Write L(x,y,λ) = f(x,y) − λg(x,y)
+2. Set ∂L/∂x = 0, ∂L/∂y = 0, ∂L/∂λ = 0
+3. Solve the system
+4. Evaluate f at each solution to find the min/max.`,
+        memory: `Gradient descent: imagine a blindfolded hiker on a hilly landscape who can only feel the slope under their feet. They take a step in the downhill direction, feel the slope again, take another step. They'll reach a valley — but maybe not the lowest one.`,
+        examTip: `The Lagrange multiplier λ has a useful interpretation: it equals ∂f*/∂c, the rate of change of the optimal value as the constraint level c changes. In economics this is the "shadow price." In exams, you usually don't need this interpretation — just use it mechanically.`,
+        facts: ["∇f=0 → critical point", "Hessian PD → min", "Lagrange: ∇f=λ∇g", "Convex → global min", "SGD = minibatch descent", "MLE = optimization"]
+      },
+
+      {
+        id: "fourier-analysis",
+        title: "Fourier Analysis",
+        tags: ["applied"],
+        chain: ["Any periodic signal = sum of sines and cosines", "Fourier series decomposes it", "Fourier transform extends to non-periodic signals", "Frequency domain reveals hidden structure", "FFT computes it fast"],
+        blurb: "Fourier analysis says any signal — sound, light, a DNA sequence — can be decomposed into simple waves. It's how you separate signal from noise.",
+        detail: `<strong>Core idea:</strong>
+Any well-behaved periodic function f(x) with period 2π can be written as an infinite sum:
+f(x) = a₀/2 + Σ[aₙcos(nx) + bₙsin(nx)]
+The coefficients aₙ, bₙ tell you "how much" of each frequency is present.
+
+<strong>Computing Fourier coefficients:</strong>
+aₙ = (1/π) ∫₋π^π f(x)cos(nx) dx
+bₙ = (1/π) ∫₋π^π f(x)sin(nx) dx
+The key: sin and cos of different frequencies are orthogonal — their integrals multiply to zero. This orthogonality lets you isolate each coefficient independently.
+
+<strong>Fourier Transform (continuous, non-periodic):</strong>
+F(ω) = ∫₋∞^∞ f(t) e^(−iωt) dt
+Converts a time-domain signal f(t) to a frequency-domain representation F(ω).
+|F(ω)|² = power spectrum — how much energy at each frequency.
+Inverse Fourier Transform recovers f(t) from F(ω).
+
+<strong>Discrete Fourier Transform (DFT):</strong>
+For sampled data (N equally spaced points): Xₖ = Σₙ xₙ e^(−2πiknN)
+FFT (Fast Fourier Transform): computes DFT in O(N log N) instead of O(N²). One of the most important algorithms ever written.
+
+<strong>Convolution theorem:</strong>
+Convolution in time domain = multiplication in frequency domain.
+f*g in time ↔ F·G in frequency.
+This makes filtering computationally cheap: multiply in frequency, transform back.
+
+<strong>In Bioinformatics:</strong>
+Spectral analysis of DNA sequences detects periodicities (nucleosome positioning has ~10 bp period). Protein structure factors in X-ray crystallography are Fourier transforms of electron density. Signal processing for nanopore sequencing (raw ionic current → base calls) uses Fourier-based filtering.`,
+        shortcut: `Key pairs to memorize (Fourier Transform):
+• A sharp spike in time → broad spread in frequency
+• A broad smooth signal in time → narrow spike in frequency
+• A pure sine wave in time → two spikes in frequency (at ±ω)
+High frequencies = rapid changes. Low frequencies = slow trends. Noise is usually high-frequency.`,
+        memory: `Think of a prism splitting white light into a rainbow. Fourier analysis is the mathematical prism — it splits a complex signal into its pure frequency components. Just as white light = all colors mixed, a complex wave = all frequencies mixed.`,
+        examTip: `The sampling theorem (Nyquist): to faithfully capture a signal with maximum frequency f_max, you must sample at least 2f_max times per second. Sample too slowly → aliasing (high frequencies masquerade as low ones). This is why audio CDs sample at 44.1 kHz — humans hear up to ~22 kHz.`,
+        facts: ["f(x) = sum of sin/cos", "Orthogonality isolates coeff", "FFT = O(N log N)", "Convolution ↔ multiplication", "Nyquist: sample ≥ 2f_max", "Power spectrum = |F(ω)|²"]
+      },
+
+    ]
+  },
+
 ];
 
 // ── Flatten all concepts for search ──────────────────────────────────────
