@@ -2308,6 +2308,242 @@ High frequencies = rapid changes. Low frequencies = slow trends. Noise is usuall
     ]
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    id: "bioinformatics-specific",
+    icon: "🧬",
+    title: "Bioinformatics-Specific Mathematics",
+    subtitle: "The exact math behind sequence alignment, genome analysis, and computational biology",
+    concepts: [
+
+      {
+        id: "sequence-alignment-math",
+        title: "Sequence Alignment — The Math Behind It",
+        tags: ["biospec"],
+        chain: ["Two sequences to compare", "Define a scoring scheme", "Fill a dynamic programming matrix", "Traceback gives the alignment", "Score measures biological similarity"],
+        blurb: "Sequence alignment is a dynamic programming problem. The Needleman-Wunsch and Smith-Waterman algorithms are mathematical solutions to the question: what is the best way to line up two biological sequences?",
+        detail: `<strong>The problem:</strong>
+Given two sequences (DNA, RNA, or protein), find the alignment that maximizes a similarity score, allowing for matches, mismatches, and gaps.
+Seq A: AGCT   Seq B: ACT
+One alignment: A-GCT / AC-T- (with gaps introduced)
+
+<strong>Scoring scheme:</strong>
+• Match: +1 (or substitution matrix value)
+• Mismatch: −1 (or substitution matrix penalty)
+• Gap open penalty: −d (introducing a gap)
+• Gap extension penalty: −e (extending an existing gap, usually e < d)
+Affine gap penalty = −d − (k−1)e for a gap of length k.
+
+<strong>Needleman-Wunsch (global alignment):</strong>
+Align the entire length of both sequences.
+Fill matrix F where F(i,j) = best score aligning A[1..i] with B[1..j].
+Recurrence:
+F(i,j) = max { F(i−1,j−1) + s(Aᵢ,Bⱼ),   ← match/mismatch
+               F(i−1,j) − gap,              ← gap in B
+               F(i,j−1) − gap }             ← gap in A
+Time: O(mn). Space: O(mn). Traceback from F(m,n) gives the alignment.
+
+<strong>Smith-Waterman (local alignment):</strong>
+Find the highest-scoring local region — doesn't have to span both sequences.
+Same recurrence but: F(i,j) = max{0, …} (reset to zero, no negative scores).
+Start traceback from the highest value in the matrix. Finds the best conserved domain.
+
+<strong>Multiple Sequence Alignment (MSA):</strong>
+Exact solution is NP-hard (exponential in number of sequences). In practice: progressive alignment (ClustalW, MUSCLE) builds pairwise alignments and merges them; iterative refinement (MAFFT) improves the result.
+
+<strong>Why it matters mathematically:</strong>
+Alignment score approximates evolutionary distance. The probability that a score this high arose by chance is computed from extreme value distribution (Gumbel distribution) — the basis of BLAST's E-value.`,
+        shortcut: `Matrix fill order: always left-to-right, top-to-bottom. Each cell depends on the cell above-left (diagonal), above (gap in A), and left (gap in B). If you can remember those three arrows, you can fill any DP alignment matrix.
+Global (NW): fill corner-to-corner, traceback from bottom-right.
+Local (SW): set negatives to 0, traceback from the maximum cell anywhere.`,
+        memory: `Think of the DP matrix as a city grid. You start at the top-left corner and want to reach the bottom-right (global) or the highest point in the city (local). At each intersection you choose the best path — diagonal (match), down (gap), or right (gap). The matrix records the best total score to reach each block.`,
+        examTip: `The time complexity O(mn) for pairwise alignment means comparing two sequences each 1000 bp takes 10⁶ operations — fast. But aligning a query against a genome of 3×10⁹ bp naively would take 3×10¹² operations — this is why BLAST uses heuristics (k-mer seeds) instead of full DP.`,
+        facts: ["NW = global alignment", "SW = local alignment", "Both O(mn) time", "Gap penalty = affine", "SW: floor at 0", "BLAST uses k-mer seeds"]
+      },
+
+      {
+        id: "scoring-matrices",
+        title: "Substitution Matrices — BLOSUM & PAM",
+        tags: ["biospec"],
+        chain: ["Not all mismatches are equal", "Amino acid substitutions have different probabilities", "Log-odds score = log(observed/expected)", "BLOSUM built from conserved blocks", "PAM built from evolutionary model"],
+        blurb: "A substitution matrix assigns a score to replacing one amino acid with another. These scores are log-odds ratios derived from real biological data — they encode millions of years of evolution.",
+        detail: `<strong>Why not just +1/−1?</strong>
+Some amino acid substitutions are common (Leucine ↔ Isoleucine — both hydrophobic, similar size). Others are rare and likely harmful (Tryptophan ↔ Glycine — completely different). A flat scoring scheme treats all mismatches equally; substitution matrices reflect actual evolutionary patterns.
+
+<strong>Log-odds scoring:</strong>
+Score(a,b) = log [ P(a,b observed in alignment) / P(a,b expected by chance) ]
+• Positive score: this pair appears more often than chance → evolutionarily conservative substitution
+• Negative score: this pair appears less often than chance → rarely substituted
+• Zero: appears exactly as often as chance
+
+<strong>PAM matrices (Point Accepted Mutation):</strong>
+PAM1 = 1 accepted mutation per 100 amino acids. Built by Dayhoff (1978) from closely related protein families, then extrapolated.
+PAM250 ≈ 250 mutations per 100 positions — distantly related sequences.
+Higher PAM number = more evolutionary distance. Use high PAM for distant homologs.
+
+<strong>BLOSUM matrices (BLOcks SUbstitution Matrix):</strong>
+Built by Henikoff & Henikoff (1992) from BLOCKS database — ungapped aligned conserved regions across many protein families.
+BLOSUM62: built from alignments sharing ≤62% identity. The standard default.
+BLOSUM80: built from more similar sequences → harsher penalties → use for close homologs.
+Lower BLOSUM number = suitable for more distantly related sequences.
+(Note: BLOSUM and PAM number scales go opposite directions.)
+
+<strong>Reading the matrix:</strong>
+The diagonal = score for matching that amino acid to itself. High diagonal = rare amino acid (a random match means more).
+Off-diagonal positive values = biochemically similar pairs (Asp/Glu, both acidic; Val/Leu/Ile, all hydrophobic).
+
+<strong>In BLAST:</strong>
+Default BLAST protein search uses BLOSUM62. The alignment score S and database size determine the E-value: E = K·m·n·e^(−λS), where K and λ are BLOSUM62-specific statistical parameters.`,
+        shortcut: `BLOSUM number rule: higher number = stricter (built from more similar sequences) = better for close relatives.
+PAM number rule: higher number = more evolutionary distance = better for distant relatives.
+Default when uncertain: BLOSUM62. It's the benchmark that everything else is compared to.`,
+        memory: `BLOSUM is like a survey of "what substitutions actually happened in real conserved proteins." The 62 in BLOSUM62 is the identity cutoff used to build it — sequences more than 62% identical were down-weighted so the matrix isn't biased toward over-represented families.`,
+        examTip: `BLOSUM62 scores range roughly from −4 to +11. A match score of 0 doesn't mean "neutral" — it means that pair appears exactly as often as expected by chance, which in a conserved region is actually a bad sign. Positive = conserved. Negative = selected against.`,
+        facts: ["Log-odds = log(obs/exp)", "BLOSUM62 = default", "Higher BLOSUM = closer seqs", "Higher PAM = distant seqs", "Diagonal = self-match", "λ,K = BLOSUM stats params"]
+      },
+
+      {
+        id: "markov-chains-biology",
+        title: "Markov Chains in Biology",
+        tags: ["biospec"],
+        chain: ["System in one of several states", "Transitions depend only on current state", "Transition matrix T encodes probabilities", "Steady state = Tv = v", "Models sequences, evolution, gene regulation"],
+        blurb: "A Markov chain assumes the next state depends only on the current state — not the history. This simplification is powerful enough to model DNA sequences, evolution along phylogenies, and gene regulatory switches.",
+        detail: `<strong>Definition:</strong>
+A sequence of states X₀, X₁, X₂, … where P(Xₙ₊₁ = j | Xₙ = i, Xₙ₋₁, …) = P(Xₙ₊₁ = j | Xₙ = i).
+The future depends only on the present — not the past. This is the Markov property.
+
+<strong>Transition matrix:</strong>
+T is an n×n matrix where Tᵢⱼ = P(go to state j | currently in state i).
+Each row sums to 1. Powers of T give multi-step probabilities: T^k gives the probability of going from state i to j in exactly k steps.
+
+<strong>Example — CpG islands:</strong>
+DNA can be modeled with a Markov chain over {A, C, G, T}.
+CpG islands (promoter regions) have different transition probabilities than bulk genome.
+Ratio of likelihoods (CpG model vs background model) = CpG island score.
+If P(sequence | CpG model) >> P(sequence | background), likely a regulatory region.
+
+<strong>Stationary distribution:</strong>
+A probability vector π where πT = π (left eigenvector for eigenvalue 1).
+If the chain is ergodic (irreducible + aperiodic), it converges to π regardless of starting state.
+In evolution: π gives the equilibrium base frequencies a sequence converges to under a substitution model.
+
+<strong>Substitution models in phylogenetics:</strong>
+JC69 (Jukes-Cantor): all substitutions equally probable. Simplest model.
+HKY85: accounts for different base frequencies and transition/transversion rate ratio κ (transitions A↔G, C↔T are more common than transversions).
+GTR (General Time Reversible): 6 free rate parameters. Most general reversible model.
+Each is a continuous-time Markov chain; the rate matrix Q gives instantaneous rates; P(t) = e^(Qt).
+
+<strong>In Bioinformatics:</strong>
+PageRank (Google) is a Markov chain on a graph — identical math. MCMC (Markov Chain Monte Carlo) for Bayesian phylogenetics samples from a posterior distribution by constructing a chain whose stationary distribution IS the posterior.`,
+        shortcut: `To find the stationary distribution of a 2-state chain with T = [[1−a, a],[b, 1−b]]:
+Solve πT = π with π₁+π₂=1.
+Answer: π₁ = b/(a+b), π₂ = a/(a+b).
+Intuition: the steady-state fraction in state 1 is proportional to how often you enter it (rate b from state 2).`,
+        memory: `"Markov" = memoryless. The chain has no memory of how it got to its current state. It's like a person with amnesia who can only decide what to do next based on where they are right now — not where they've been.`,
+        examTip: `Ergodicity is the condition that guarantees convergence to a unique stationary distribution. A chain is ergodic if: (1) you can get from any state to any other (irreducible), and (2) you don't get trapped in cycles (aperiodic). If a chain is not ergodic, it may have multiple stationary distributions or oscillate.`,
+        facts: ["Markov = memoryless", "Row sums = 1", "πT = π → stationary", "T^k = k-step probs", "GTR = general DNA model", "MCMC uses Markov chains"]
+      },
+
+      {
+        id: "hidden-markov-models",
+        title: "Hidden Markov Models (HMMs)",
+        tags: ["biospec"],
+        chain: ["Hidden states you can't see", "Observed emissions you can see", "Three core problems: evaluation, decoding, learning", "Forward-backward algorithm", "Viterbi finds the most likely state path"],
+        blurb: "An HMM is a Markov chain where the states are hidden — you only see outputs that depend probabilistically on the hidden state. Gene finding, profile alignment, and protein family detection all use HMMs.",
+        detail: `<strong>Structure of an HMM:</strong>
+• Hidden states S = {s₁, s₂, …, sN} — e.g., {exon, intron, intergenic}
+• Observations O = {o₁, o₂, …, oT} — e.g., the DNA sequence
+• Transition probabilities A: aᵢⱼ = P(move to state j | in state i)
+• Emission probabilities B: bᵢ(k) = P(emit symbol k | in state i)
+• Initial probabilities π: πᵢ = P(start in state i)
+
+<strong>The three fundamental problems:</strong>
+1. Evaluation: given model (A,B,π) and sequence O, what is P(O | model)?
+   → Forward algorithm. O(N²T) time.
+
+2. Decoding: given model and O, what is the most likely hidden state sequence?
+   → Viterbi algorithm (dynamic programming). O(N²T) time.
+
+3. Learning: given O, find (A,B,π) that maximizes P(O | model)?
+   → Baum-Welch algorithm (expectation-maximization). Finds local maximum.
+
+<strong>Viterbi algorithm:</strong>
+δᵢ(t) = max probability of any path ending in state i at time t.
+δⱼ(t+1) = bⱼ(oₜ₊₁) × max_i [δᵢ(t) × aᵢⱼ]
+Traceback: record the argmax at each step to reconstruct the path.
+
+<strong>Profile HMMs for sequence families:</strong>
+A profile HMM encodes the consensus of a multiple sequence alignment as a model with match states (M), insert states (I), and delete states (D).
+Each position in the alignment has its own emission distribution — conserved positions have high probability for specific amino acids.
+HMMER (the standard tool) uses profile HMMs to search databases.
+
+<strong>In Bioinformatics:</strong>
+Gene prediction (GENSCAN, Augustus): hidden states = exon/intron/splice sites.
+CpG island detection: two-state HMM.
+Protein family classification (Pfam): profile HMMs for each domain family.
+Nanopore base calling: RNN replaced classical HMMs but the math is the same in spirit.`,
+        shortcut: `Viterbi vs Forward:
+• Forward: sum over ALL paths (total probability of the observation)
+• Viterbi: take the MAX over all paths (single most likely path)
+Replace Σ with max in the recursion and you go from Forward to Viterbi.
+Always log-transform probabilities before multiplying — prevents numerical underflow (tiny probabilities underflow to zero after ~100 multiplications).`,
+        memory: `An HMM is like receiving a coded message from a spy who keeps switching roles (the hidden states) but you can only see the (noisy) words they send (the emissions). Viterbi decodes the most likely sequence of roles. Baum-Welch figures out the code from many intercepted messages.`,
+        examTip: `The Viterbi path is NOT necessarily the path with the highest posterior probability for each individual state. It is the single path sequence with highest joint probability. These can differ when there are many mediocre paths through one state but one clear path through another.`,
+        facts: ["3 problems: eval/decode/learn", "Forward = sum paths", "Viterbi = max path", "Baum-Welch = EM training", "Profile HMM = Pfam/HMMER", "Log probs prevent underflow"]
+      },
+
+      {
+        id: "multiple-testing-fdr",
+        title: "Multiple Testing & False Discovery Rate",
+        tags: ["biospec"],
+        chain: ["One test: p<0.05 means 5% false positive chance", "10,000 genes tested simultaneously", "500 false positives expected by chance alone", "Family-wise correction (Bonferroni) too strict", "FDR (Benjamini-Hochberg) balances discovery and error"],
+        blurb: "When you test 20,000 genes at once, statistics breaks down. Multiple testing correction is what stands between a real discovery and publishing noise. FDR is the standard solution in genomics.",
+        detail: `<strong>The problem:</strong>
+With α = 0.05, each test has a 5% chance of a false positive (Type I error) under the null.
+Test 20,000 genes: expected false positives = 20,000 × 0.05 = 1,000.
+If you find 1,200 "significant" genes, ~1,000 of them might be noise.
+
+<strong>Family-Wise Error Rate (FWER):</strong>
+P(at least one false positive across ALL tests).
+Bonferroni correction: use α* = α/m where m = number of tests.
+For m=20,000 and α=0.05: α* = 0.0000025.
+Guarantees FWER ≤ 0.05 but is extremely conservative — misses true positives.
+
+<strong>False Discovery Rate (FDR):</strong>
+FDR = E[false positives / total discoveries] = expected fraction of your hits that are wrong.
+FDR = 0.05 means: among all genes you call significant, 5% are expected to be false.
+Much more powerful than FWER for large-scale genomics.
+
+<strong>Benjamini-Hochberg procedure (controlling FDR at level q):</strong>
+1. Sort your m p-values: p₍₁₎ ≤ p₍₂₎ ≤ … ≤ p₍ₘ₎
+2. Find the largest k where p₍ₖ₎ ≤ (k/m)·q
+3. Reject all null hypotheses for tests 1 through k (declare them significant)
+This controls FDR ≤ q under independence (and many dependent cases).
+
+<strong>q-value:</strong>
+The q-value of a test is the minimum FDR at which that test would be declared significant. Analogous to the p-value but on the FDR scale. A q-value of 0.03 means: if you call this gene significant, you expect 3% of all tests at this threshold to be false positives.
+
+<strong>Practical interpretation:</strong>
+p-value: probability of this result (or more extreme) given null is true.
+Adjusted p-value (Bonferroni): multiplies raw p by m.
+q-value / BH-adjusted p: rank-based, accounts for the full distribution of p-values.
+
+<strong>In Bioinformatics:</strong>
+RNA-seq differential expression: DESeq2, edgeR output BH-adjusted p-values by default. GWAS (Genome-Wide Association Studies): typically use p < 5×10⁻⁸ (Bonferroni for ~1M independent SNPs). ChIP-seq peak calling, proteomics, methylation arrays — all require multiple testing correction.`,
+        shortcut: `BH procedure in 3 steps:
+1. Sort p-values smallest to largest (rank 1 to m)
+2. For each, compute BH threshold = (rank/m) × q
+3. Find the last rank where p ≤ threshold — declare that rank and everything below it significant.
+
+Quick sanity check: if all p-values are uniform (pure noise), BH will declare approximately q×m false positives — exactly what FDR control promises.`,
+        memory: `Think of FDR as a quality control standard for your hit list: "I'm willing to accept that 5% of what I call significant is wrong." Bonferroni is like demanding zero defects — safe but you reject most of your production line. BH is like accepting a 5% defect rate — you ship more product, and you know exactly how much is defective.`,
+        examTip: `Bonferroni is FWER control, not FDR control. They answer different questions: FWER asks "did I make ANY mistake?"; FDR asks "what fraction of my positives are mistakes?" For genomics with thousands of tests, always prefer BH/FDR unless a single false positive is catastrophic (clinical diagnosis → use FWER).`,
+        facts: ["FWER: P(any FP)", "Bonferroni: α/m", "FDR: E[FP/discoveries]", "BH: rank-based procedure", "q-value = min FDR threshold", "DESeq2 uses BH by default"]
+      },
+
+    ]
+  },
+
 ];
 
 // ── Flatten all concepts for search ──────────────────────────────────────
