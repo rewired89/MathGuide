@@ -393,11 +393,14 @@ function el(tag, attrs = {}, text = '') {
 
 function tagLabel(tag) {
   return {
-    num:  'Numbers',
-    alg:  'Algebra',
-    calc: 'Calculus',
-    stat: 'Stats',
-    bio:  'BioInfo'
+    num:     'Numbers',
+    alg:     'Algebra',
+    calc:    'Calculus',
+    stat:    'Stats',
+    bio:     'BioInfo',
+    pure:    'Pure Math',
+    applied: 'Applied Math',
+    biospec: 'Bioinformatics'
   }[tag] || tag;
 }
 

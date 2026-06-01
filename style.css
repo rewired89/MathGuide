@@ -15,6 +15,9 @@
   --tag-calc: #8957e5;
   --tag-stat: #1a7f37;
   --tag-bio: #bf8700;
+  --tag-pure: #0e7490;
+  --tag-applied: #b45309;
+  --tag-biospec: #7c3aed;
   --chain-bg: #1c2128;
   --chain-arrow: #6e7681;
   --learned: #1a7f37;
@@ -395,7 +398,10 @@ main {
 .tag-alg  { background: rgba(247,129,102,.2);  color: #ffa198; }
 .tag-calc { background: rgba(137,87,229,.2);   color: #d2a8ff; }
 .tag-stat { background: rgba(63,185,80,.15);   color: #7ee787; }
-.tag-bio  { background: rgba(191,135,0,.2);    color: #e3b341; }
+.tag-bio     { background: rgba(191,135,0,.2);    color: #e3b341; }
+.tag-pure    { background: rgba(14,116,144,.2);  color: #67e8f9; }
+.tag-applied { background: rgba(180,83,9,.2);    color: #fbbf24; }
+.tag-biospec { background: rgba(124,58,237,.2);  color: #c4b5fd; }
 
 /* ── Chain ── */
 .chain {

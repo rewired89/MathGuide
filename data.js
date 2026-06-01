@@ -1,6 +1,6 @@
 // MathGuide concept database
 // Each concept: id, title, tags, chain[], blurb, detail, shortcut, memory, examTip, facts[]
-// tags: num | alg | calc | stat | bio
+// tags: num | alg | calc | stat | bio | pure | applied | biospec
 
 const SECTIONS = [
 
