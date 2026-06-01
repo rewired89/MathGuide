@@ -1861,6 +1861,237 @@ sin(θ)/cos(θ) = tan(θ)
     ]
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    id: "pure-math",
+    icon: "∞",
+    title: "Pure Mathematics",
+    subtitle: "The math that exists for its own sake — structure, proof, and the rules beneath every formula",
+    concepts: [
+
+      {
+        id: "set-theory",
+        title: "Set Theory",
+        tags: ["pure"],
+        chain: ["A set is a collection of distinct objects", "Sets can contain anything", "Operations: union, intersection, complement", "Sets can contain other sets", "Foundation of all mathematics"],
+        blurb: "A set is just a collection of distinct objects. Everything in mathematics — numbers, functions, spaces — is built on top of sets.",
+        detail: `<strong>What is a set?</strong>
+A set is a well-defined collection of distinct objects called elements. You write sets with curly braces.
+A = {1, 2, 3}   B = {2, 3, 4}   C = {} (empty set, written ∅)
+
+<strong>Notation:</strong>
+• x ∈ A means "x is an element of A"
+• x ∉ A means "x is NOT an element of A"
+• A ⊆ B means "A is a subset of B" — every element of A is also in B
+• A ⊂ B means "A is a proper subset" — A ⊆ B but A ≠ B
+
+<strong>Operations:</strong>
+Union (A ∪ B): everything in A OR B (or both)
+A ∪ B = {1, 2, 3, 4}
+
+Intersection (A ∩ B): only what's in BOTH A and B
+A ∩ B = {2, 3}
+
+Complement (Aᶜ): everything NOT in A (relative to some universe U)
+
+Difference (A \\ B): elements in A but not in B
+A \\ B = {1}
+
+<strong>Cardinality:</strong>
+|A| = number of elements in A. |{1,2,3}| = 3. |∅| = 0.
+Infinite sets: ℕ and ℤ are countably infinite. ℝ is uncountably infinite — strictly bigger.
+
+<strong>In Bioinformatics:</strong>
+A genome is a set of genes. The intersection of two gene sets = shared genes between species. Set operations underlie Venn diagram analyses in RNA-seq (overlap of differentially expressed genes).`,
+        shortcut: `Remember with a Venn diagram:
+• ∪ = the WHOLE diagram (both circles)
+• ∩ = only the MIDDLE overlap
+• \\ = one circle MINUS the overlap
+• ∅ is a subset of every set — A ∅ ⊆ A is always true.`,
+        memory: `Union = Unite (bring everything together). Intersection = where roads Intersect (only the crossing point). The ∪ symbol looks like a cup collecting everything; the ∩ symbol looks like a cap/hat — only what fits under it.`,
+        examTip: `Watch for the difference between ⊆ (subset or equal) and ⊂ (proper subset — strictly smaller). Every set is a subset of itself (A ⊆ A), but NOT a proper subset of itself. The empty set ∅ is a subset of every set.`,
+        facts: ["∈ = membership", "∪ = union", "∩ = intersection", "∅ = empty set", "ℝ uncountable", "A⊆A always"]
+      },
+
+      {
+        id: "logic-and-proof",
+        title: "Logic & Mathematical Proof",
+        tags: ["pure"],
+        chain: ["Statement is true or false", "Connect with AND / OR / NOT / IF-THEN", "Build an argument", "Verify every step follows", "Conclusion is certain"],
+        blurb: "Proof is how mathematics achieves certainty. A proof is an airtight logical argument — not an example, not a pattern, but a guarantee that something is always true.",
+        detail: `<strong>Propositions and connectives:</strong>
+A proposition is any statement that is either true or false. Not a question, not an opinion.
+• p AND q (p ∧ q): true only if BOTH are true
+• p OR q (p ∨ q): true if AT LEAST ONE is true
+• NOT p (¬p): flips true to false, false to true
+• p → q (if p then q): false ONLY when p is true and q is false
+
+<strong>The implication p → q:</strong>
+"If it rains, the ground is wet."
+• p = "it rains", q = "ground is wet"
+• If it rains and ground IS wet → true (as expected)
+• If it rains and ground is NOT wet → false (promise broken)
+• If it doesn't rain → true either way (the promise made no claim about dry days)
+
+Contrapositive: ¬q → ¬p is logically identical to p → q.
+"If the ground is not wet, it did not rain." — same meaning, useful for proofs.
+
+<strong>Types of proof:</strong>
+Direct proof: assume p, show q follows step by step.
+Proof by contradiction: assume the opposite is true, derive an absurdity.
+Proof by induction: show base case is true, show if it's true for n it's true for n+1 — then it's true for all n.
+
+<strong>Example — proof by contradiction:</strong>
+Claim: √2 is irrational.
+Assume √2 = p/q in lowest terms. Then 2 = p²/q², so p² = 2q². p² is even → p is even → p = 2k.
+Then (2k)² = 2q² → 4k² = 2q² → q² = 2k² → q is also even.
+But then p/q is NOT in lowest terms. Contradiction. ∎
+
+<strong>In Bioinformatics:</strong>
+Boolean logic is literal code — AND, OR, NOT appear directly in query languages (BLAST filters, database queries). Proof by induction underpins algorithm correctness for dynamic programming (Needleman-Wunsch, Viterbi).`,
+        shortcut: `To disprove a universal claim ("all X are Y"), you only need ONE counterexample.
+To prove a universal claim, one example is never enough — you need a general argument.
+Contrapositive trick: if "if p then q" is hard to prove directly, prove "if not q then not p" instead — they're identical.`,
+        memory: `p → q is a PROMISE. The promise is only broken when you make the claim (p is true) but the outcome doesn't happen (q is false). If you never made the claim, you can't break the promise.`,
+        examTip: `The inverse (¬p → ¬q) and converse (q → p) are NOT the same as the original. Only the contrapositive (¬q → ¬p) is logically equivalent. This is one of the most common logic errors on exams.`,
+        facts: ["p→q = contrapositive", "Contradiction finds absurdity", "Induction: base + step", "∀ = for all", "∃ = there exists", "∎ = QED"]
+      },
+
+      {
+        id: "number-theory",
+        title: "Number Theory",
+        tags: ["pure"],
+        chain: ["Integers and their properties", "Divisibility and primes", "GCD and LCM", "Modular arithmetic", "Fundamental Theorem of Arithmetic"],
+        blurb: "Number theory is the study of integers — divisibility, primes, and the hidden structure of whole numbers. It looks simple and runs very deep.",
+        detail: `<strong>Divisibility:</strong>
+a divides b (written a | b) if b = a·k for some integer k.
+6 | 24 because 24 = 6·4. 5 ∤ 24 because there's no integer k where 24 = 5k.
+
+<strong>Prime numbers:</strong>
+A prime has exactly two distinct positive divisors: 1 and itself.
+2, 3, 5, 7, 11, 13, 17, 19, 23…
+1 is NOT prime (only one divisor). 2 is the only even prime.
+
+<strong>Fundamental Theorem of Arithmetic:</strong>
+Every integer > 1 is either prime or factors uniquely into primes.
+360 = 2³ × 3² × 5   (only one way, ignoring order)
+This uniqueness is why primes are called the "atoms" of arithmetic.
+
+<strong>GCD and LCM:</strong>
+GCD(a,b) = greatest common divisor — largest number dividing both.
+LCM(a,b) = least common multiple — smallest number both divide into.
+GCD(12,8) = 4.   LCM(12,8) = 24.
+Key relationship: GCD(a,b) × LCM(a,b) = a × b
+
+<strong>Modular arithmetic:</strong>
+a ≡ b (mod n) means n divides (a − b). The remainder is all that matters.
+17 ≡ 2 (mod 5) because 17 − 2 = 15 = 5 × 3.
+A clock is mod 12. Day of week is mod 7.
+
+<strong>Euclidean algorithm (fastest GCD):</strong>
+GCD(48, 18): 48 = 2×18 + 12 → GCD(18,12)
+18 = 1×12 + 6 → GCD(12,6)
+12 = 2×6 + 0 → GCD = 6 ✓
+
+<strong>In Bioinformatics:</strong>
+Hashing DNA sequences uses modular arithmetic. Reading frames in genetics are mod 3 (codons). Cyclic genome coordinates use modular indexing.`,
+        shortcut: `Divisibility shortcuts:
+• Div by 2: last digit even
+• Div by 3: digit sum divisible by 3
+• Div by 5: last digit 0 or 5
+• Div by 9: digit sum divisible by 9
+Mod trick: to find 7¹⁰⁰ mod 5, find the pattern: 7≡2, 2¹=2, 2²=4, 2³=3, 2⁴=1 (mod 5) — cycle of 4. 100÷4=25 remainder 0 → 2⁴=1 → answer: 1.`,
+        memory: `Modular arithmetic = clock arithmetic. After midnight (mod 24), hours reset. After 12 on a clock face (mod 12), you're back at 12. The "mod" just says when the counter resets.`,
+        examTip: `A common trap: GCD(a,0) = a (every number divides 0). Also, if GCD(a,b)=1, a and b are called coprime — they share no factors. This matters for fractions: p/q is fully reduced when GCD(p,q)=1.`,
+        facts: ["a|b means b=ak", "2 = only even prime", "Every n = prime product", "GCD×LCM = a×b", "mod = remainder", "Euclidean algo = fast GCD"]
+      },
+
+      {
+        id: "abstract-algebra",
+        title: "Abstract Algebra — Groups & Structure",
+        tags: ["pure"],
+        chain: ["A set plus an operation", "Check 4 axioms: closure, associativity, identity, inverses", "That's a group", "Add commutativity → abelian group", "Structure, not numbers"],
+        blurb: "Abstract algebra asks: what are the rules an operation must satisfy, regardless of what the objects are? A group is the simplest such structure — and it appears everywhere from rotations to DNA strand symmetry.",
+        detail: `<strong>What is a group?</strong>
+A group (G, ★) is a set G with an operation ★ satisfying four axioms:
+1. Closure: if a,b ∈ G then a★b ∈ G (the result stays in the set)
+2. Associativity: (a★b)★c = a★(b★c)
+3. Identity: there exists e ∈ G where a★e = e★a = a
+4. Inverses: for every a, there exists a⁻¹ where a★a⁻¹ = e
+
+<strong>Examples of groups:</strong>
+(ℤ, +): integers under addition. Identity = 0. Inverse of 5 = −5. ✓
+(ℝ\{0}, ×): non-zero reals under multiplication. Identity = 1. Inverse of 3 = 1/3. ✓
+(ℤ, ×): integers under multiplication — NOT a group. 2 has no integer inverse (1/2 ∉ ℤ). ✗
+
+<strong>Abelian groups:</strong>
+If a★b = b★a for all elements, the group is abelian (commutative).
+(ℤ, +) is abelian. Matrix multiplication is generally NOT abelian.
+
+<strong>Cyclic groups:</strong>
+A group generated by repeatedly applying one element.
+ℤ₄ = {0,1,2,3} under addition mod 4. Starting from 1: 1→2→3→0→1…
+The integers mod n under addition, ℤₙ, are cyclic groups of order n.
+
+<strong>Why it matters:</strong>
+Symmetries of any object form a group. The rotations of a square form a group of order 4. The symmetries of a molecule determine its physical properties. In cryptography (RSA, elliptic curves), group structure is the security foundation.
+
+<strong>In Bioinformatics:</strong>
+The symmetric group Sₙ (all permutations of n items) models genome rearrangements. Evolutionary distance between genomes can be measured as operations in a permutation group.`,
+        shortcut: `To check if something is a group, test the four axioms in order. Closure fails first most often — check if the operation can produce something outside the set.
+Quick check: (even integers, +)? Closure ✓ (even+even=even), identity=0 ✓, inverse of 2n = −2n ✓ → group. (odd integers, +)? Closure ✗ (odd+odd=even) → not a group.`,
+        memory: `CAII — Closure, Associativity, Identity, Inverses. A group needs all four. Miss one and it's just a set with an operation (a "magma" or "monoid"), but not a group.`,
+        examTip: `Order of a group = number of elements. Order of an element a = smallest positive n where aⁿ = e. By Lagrange's Theorem, the order of any element divides the order of the group — useful shortcut for cyclic group problems.`,
+        facts: ["4 axioms: CAII", "Abelian = commutative", "ℤₙ = cyclic group", "Sₙ = permutations", "Order(element)|Order(group)", "Identity is unique"]
+      },
+
+      {
+        id: "real-analysis",
+        title: "Real Analysis — Limits & Continuity Rigorously",
+        tags: ["pure"],
+        chain: ["Intuitive limit idea", "ε-δ definition makes it rigorous", "Continuity defined via limits", "Differentiability requires continuity", "Integration built from limits of sums"],
+        blurb: "Real analysis is calculus made airtight. It replaces intuition with definitions precise enough that every step can be verified. The ε-δ definition of a limit is where informal calculus becomes proof.",
+        detail: `<strong>Why rigor matters:</strong>
+Intuitive calculus works most of the time but fails in edge cases — functions that are continuous everywhere but differentiable nowhere, series that seem to converge but don't. Analysis fixes this with precise definitions.
+
+<strong>The ε-δ definition of a limit:</strong>
+lim[x→a] f(x) = L means:
+For every ε > 0 (no matter how small a target band around L you pick),
+there exists δ > 0 such that:
+if 0 < |x − a| < δ, then |f(x) − L| < ε.
+
+Plain English: you can get f(x) as close to L as anyone demands, by keeping x close enough to a. The challenge is always: given ε, FIND the δ that works.
+
+<strong>Continuity:</strong>
+f is continuous at a if lim[x→a] f(x) = f(a).
+Three things must hold: the limit exists, f(a) is defined, and they're equal.
+A function continuous on [a,b] satisfies the Intermediate Value Theorem: it hits every value between f(a) and f(b).
+
+<strong>Sequences and convergence:</strong>
+A sequence (aₙ) converges to L if for every ε > 0, there exists N such that for all n > N, |aₙ − L| < ε.
+The sequence 1/n → 0. The sequence (−1)ⁿ diverges (bounces between −1 and 1 forever).
+
+<strong>Completeness of ℝ:</strong>
+Every Cauchy sequence in ℝ converges. (A Cauchy sequence = terms get arbitrarily close to each other.) This property — completeness — is what makes ℝ different from ℚ. The sequence of rational approximations to √2 is Cauchy but its limit (√2) is not in ℚ.
+
+<strong>In Bioinformatics:</strong>
+Convergence of iterative algorithms (EM algorithm for mixture models, iterative alignment scoring) is guaranteed by analysis-type arguments. Understanding when an algorithm converges — and how fast — requires this framework.`,
+        shortcut: `ε-δ proof template:
+1. Write "Let ε > 0 be given."
+2. Work backwards from |f(x)−L| < ε to find what |x−a| < δ you need.
+3. Choose δ = (that expression involving ε).
+4. Verify: assume |x−a| < δ, then show |f(x)−L| < ε follows.
+
+Example: prove lim[x→2] 3x = 6.
+|3x−6| = 3|x−2| < ε when |x−2| < ε/3. So choose δ = ε/3. ✓`,
+        memory: `ε is the challenge (how close to L must we get?). δ is your response (how close to a do we stay?). Think of it as a game: your opponent picks ε, you must find δ. If you can always win the game, the limit exists.`,
+        examTip: `Continuous does NOT imply differentiable. f(x) = |x| is continuous everywhere but not differentiable at x=0 (corner point). Differentiable DOES imply continuous — the implication only goes one way.`,
+        facts: ["ε-δ = rigorous limit", "Continuous: limit=value", "IVT needs continuity", "Cauchy → convergent in ℝ", "Diff → continuous", "Continuous ↛ diff"]
+      },
+
+    ]
+  },
+
 ];
 
 // ── Flatten all concepts for search ──────────────────────────────────────
