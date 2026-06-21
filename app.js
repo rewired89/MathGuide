@@ -109,49 +109,96 @@ function setSidebarActive(sectionId) {
 function renderHome() {
   const total = ALL_CONCEPTS.length;
   const learned = learnedIds.size;
+  const pct = total ? Math.round(learned / total * 100) : 0;
 
   mainEl.innerHTML = '';
   const hero = el('div', { class: 'hero' });
 
+  // Grid decoration dots
+  const dotRows = 6;
+  const dotsHtml = Array.from({length: dotRows * 5}, () => '<span></span>').join('');
+
   hero.innerHTML = `
-    <h1>Your path to <span>Bioinformatics Math</span></h1>
-    <p class="hero-sub">One concept at a time. Every idea grounded in WHY before HOW. Built for your brain — puzzles, patterns, and elegant shortcuts.</p>
-    <div class="path-cards" id="pathCards"></div>
-    <div style="margin-bottom:16px">
-      <div class="detail-label">Your progress</div>
-      <div class="section-progress-bar" style="margin-bottom:8px">
-        <div class="section-progress-fill" style="width:${total ? Math.round(learned/total*100) : 0}%"></div>
+    <!-- Banner -->
+    <div class="hero-banner">
+      <div class="hero-grid-deco">${dotsHtml}</div>
+      <div class="hero-eyebrow"><span class="red-dot"></span> Bioinformatics Math Guide</div>
+      <h1>Master <span class="red">Math</span> for<br><span class="outline">Bioinformatics</span></h1>
+      <p class="hero-sub">One concept at a time. Every idea grounded in WHY before HOW — built for scientists, not just mathematicians.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" id="startLearningBtn">Start Learning →</button>
+        <button class="btn-ghost" id="viewProgressBtn">View Progress</button>
       </div>
-      <div style="font-size:13px;color:var(--text-muted)">${learned} of ${total} concepts marked as learned</div>
     </div>
-    <div style="padding:20px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;max-width:600px">
-      <div class="detail-label">The Path to Bioinformatics</div>
-      <div style="font-size:13px;color:var(--text-muted);line-height:1.8">
-        <strong style="color:var(--text)">1. Numbers & Algebra</strong> → Rebuild the foundation<br>
-        <strong style="color:var(--text)">2. Functions & Graphs</strong> → Visualize relationships<br>
-        <strong style="color:var(--text)">3. Probability & Statistics</strong> → The language of science<br>
-        <strong style="color:var(--text)">4. Linear Algebra</strong> → Matrices = gene expression tables<br>
-        <strong style="color:var(--text)">5. Calculus</strong> → Rates of change, optimization<br>
-        <strong style="color:var(--text)">6. Bioinformatics Math</strong> → Put it all together
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-number" data-target="${total}">0<span class="stat-accent">+</span></div>
+        <div class="stat-label">Total Concepts</div>
       </div>
+      <div class="stat-item">
+        <div class="stat-number" data-target="6">0</div>
+        <div class="stat-label">Math Sections</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" data-target="${learned}">0<span class="stat-accent">✓</span></div>
+        <div class="stat-label">Concepts Learned</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" data-target="${pct}">0<span class="stat-accent">%</span></div>
+        <div class="stat-label">Progress</div>
+      </div>
+    </div>
+
+    <!-- Path Cards -->
+    <div class="path-section">
+      <div class="section-eyebrow">Learning Modules</div>
+      <div class="section-title">Your <span>Learning</span> Path</div>
+      <div class="path-cards" id="pathCards"></div>
+    </div>
+
+    <!-- Overall Progress -->
+    <div class="overall-progress">
+      <div class="section-eyebrow">Your Progress</div>
+      <div class="progress-track">
+        <div class="progress-numbers">
+          <span class="progress-big">${learned}</span>
+          <span class="progress-denom">/ ${total}</span>
+        </div>
+        <div class="progress-label-sm">Concepts Mastered</div>
+        <div class="progress-bar-big">
+          <div class="progress-bar-fill" id="homeProgressFill" style="width:${pct}%"></div>
+        </div>
+        <div style="font-size:12px;color:var(--text-dim);font-weight:500">${pct}% complete — keep going</div>
+      </div>
+    </div>
+
+    <!-- Learning Path Steps -->
+    <div class="learning-path">
+      <div class="section-eyebrow">Curriculum</div>
+      <div class="section-title">The <span>Roadmap</span></div>
+      <div class="path-steps" id="pathSteps"></div>
     </div>
   `;
 
+  // Build path cards
   const cards = hero.querySelector('#pathCards');
-  SECTIONS.forEach(section => {
-    const total = section.concepts.length;
+  SECTIONS.forEach((section, i) => {
+    const sTotal = section.concepts.length;
     const done = section.concepts.filter(c => learnedIds.has(c.id)).length;
-    const pct = total ? Math.round(done / total * 100) : 0;
+    const sPct = sTotal ? Math.round(done / sTotal * 100) : 0;
 
     const card = el('div', { class: 'path-card' });
+    card.style.animationDelay = `${i * 0.06}s`;
     card.innerHTML = `
       <span class="path-card-icon">${section.icon}</span>
       <h3>${section.title}</h3>
       <p>${section.subtitle}</p>
       <div class="path-card-progress">
-        <div class="path-card-bar" style="width:${pct}%"></div>
+        <div class="path-card-bar" style="width:${sPct}%"></div>
       </div>
-      <div class="path-card-count">${done}/${total} concepts · ${pct}%</div>
+      <div class="path-card-count">${done}/${sTotal} · ${sPct}%</div>
     `;
     card.addEventListener('click', () => {
       currentSection = section.id;
@@ -161,7 +208,63 @@ function renderHome() {
     cards.appendChild(card);
   });
 
+  // Build path steps
+  const steps = hero.querySelector('#pathSteps');
+  const stepDescs = [
+    'Rebuild the foundation — numbers, operations, sets',
+    'Visualize relationships and solve equations',
+    'The language of science — probability and inference',
+    'Matrices = gene expression tables',
+    'Rates of change and optimization',
+    'Put it all together for real bioinformatics'
+  ];
+  SECTIONS.forEach((section, i) => {
+    const step = el('div', { class: 'path-step' });
+    step.style.animationDelay = `${i * 0.05}s`;
+    step.innerHTML = `
+      <div class="path-step-num">0${i + 1}</div>
+      <div class="path-step-body">
+        <div class="path-step-title">${section.icon} ${section.title}</div>
+        <div class="path-step-desc">${stepDescs[i] || section.subtitle}</div>
+      </div>
+      <span class="path-step-arrow">→</span>
+    `;
+    step.addEventListener('click', () => {
+      currentSection = section.id;
+      renderSection(section.id);
+      setSidebarActive(section.id);
+    });
+    steps.appendChild(step);
+  });
+
   mainEl.appendChild(hero);
+
+  // Animate stat counters
+  hero.querySelectorAll('.stat-number[data-target]').forEach(el => {
+    const target = parseInt(el.dataset.target, 10);
+    const suffix = el.querySelector('.stat-accent')?.outerHTML || '';
+    if (!target) { el.innerHTML = `0${suffix}`; return; }
+    let start = 0;
+    const duration = 1000;
+    const step = 16;
+    const increment = target / (duration / step);
+    const timer = setInterval(() => {
+      start = Math.min(start + increment, target);
+      el.innerHTML = `${Math.floor(start)}${suffix}`;
+      if (start >= target) clearInterval(timer);
+    }, step);
+  });
+
+  // Button actions
+  hero.querySelector('#startLearningBtn').addEventListener('click', () => {
+    const firstSection = SECTIONS[0];
+    currentSection = firstSection.id;
+    renderSection(firstSection.id);
+    setSidebarActive(firstSection.id);
+  });
+  hero.querySelector('#viewProgressBtn').addEventListener('click', () => {
+    hero.querySelector('.overall-progress').scrollIntoView({ behavior: 'smooth' });
+  });
 }
 
 // ── Section View ───────────────────────────────────────────────────────────
@@ -222,7 +325,7 @@ function renderSearch(query) {
 
   mainEl.innerHTML = '';
   const view = el('div', { class: 'search-view' });
-  view.innerHTML = `<h2>Search: "${query}" — ${results.length} result${results.length !== 1 ? 's' : ''}</h2>`;
+  view.innerHTML = `<h2>Search: <span>"${query}"</span> — ${results.length} result${results.length !== 1 ? 's' : ''}</h2>`;
 
   if (results.length === 0) {
     view.innerHTML += `<div class="search-empty">No concepts found for "${query}". Try a shorter or different term.</div>`;
